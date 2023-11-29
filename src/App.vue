@@ -7,7 +7,7 @@ import {ref} from "vue";
 //  - Overvej i grupper i 5 minutter HVAD der skal til for at løse denne udfordring. I behøver ikke have komplette svar, men hvilke byggesten skal der til
 //  - Skriv så metoden addPost() og send data med POST metoden - overvåg trafikken i network tab og se hvordan det fungerer
 
-// stuff we need here from the secret folder!
+// stuff we need here from the secret file!
 import {baseEndpoint, postsUrl, verifyUserEndpoint, username, password} from "./login_and_urls.js";
 
 // State
