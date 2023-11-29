@@ -1,0 +1,151 @@
+<script setup>
+import {ref} from "vue";
+
+const baseEndpoint = "https://wp.mfw-ucn.dk/wp-json";
+const postsUrl = "/wp/v2/posts";
+const verifyUserEndpoint = "/jwt-auth/v1/token";
+const username = "api-user@gmail.com";
+const password = "WRJi rFet uq4t zKTY t3NJ Ni8G";
+
+// 1. For at kunne POSTE data til vores rest api skal vi logges ind - authenticates. Vi anvender typisk jwt (json web tokens til det. Ka' I huske det fra headless cms 2. sem?). Læs om det her: https://en-gb.wordpress.org/plugins/jwt-auth/ særligt under "configuration", "NAMESPACE AND ENDPOINTS" og "REQUESTING/ GENERATING TOKEN". Skriv så en funktion getToken() der gemmer token i sessionstorage
+
+// 2.
+const posts = ref();
+
+const createForm = ref(false);
+const newPost = ref({
+  title: null,
+  content: null,
+  status: "publish",
+});
+
+getToken();
+fetchPosts();
+function postRecipe() {
+  console.log(newPost.value);
+
+  fetch(baseEndpoint + postsUrl, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      "Content-Type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify(newPost.value),
+  });
+  fetchPosts();
+}
+
+function getToken() {
+  // Confirmed!
+  const userLoginInfo = {
+    username: "api-user@gmail.com",
+    password: "WRJi rFet uq4t zKTY t3NJ Ni8G",
+  };
+
+  fetch(baseEndpoint + verifyUserEndpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userLoginInfo),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      const myToken = data.data.token;
+      sessionStorage.setItem("token", myToken);
+    })
+    .catch((err) => console.log(err));
+}
+
+function fetchPosts() {
+  fetch(baseEndpoint + postsUrl)
+    .then((res) => res.json())
+    .then((data) => {
+      posts.value = data;
+      console.log(data);
+    })
+    .catch((err) => console.log(err));
+}
+</script>
+
+<template>
+  <h1>Marks opskrifter</h1>
+  <button @click="createForm = !createForm">Skab ny opskrift</button>
+  <div v-if="createForm">
+    <form @submit.prevent="postRecipe">
+      <div>
+        <label for="heading">Overskrift:</label>
+        <input v-model="newPost.title" type="text" name="overskrift" id="overskrift" required />
+      </div>
+      <div>
+        <label for="description">Beskrivelse:</label>
+        <input v-model="newPost.content" type="text" name="description" id="description" required />
+      </div>
+      <div>
+        <button>Opret opskrift</button>
+      </div>
+    </form>
+  </div>
+  <div class="container">
+    <article v-for="post in posts" :key="post.id">
+      <h2>{{ post.title.rendered }}</h2>
+      <div v-html="post.content.rendered"></div>
+      <!-- <img :src="post.acf.coredata.image_uploaded.sizes.medium" alt="" /> -->
+    </article>
+  </div>
+</template>
+
+<style scoped>
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 2rem;
+  box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.container img {
+  max-width: 100%;
+}
+
+article {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+form {
+  width: 500px;
+  background: #eee;
+  padding: 1rem;
+  margin: 1rem auto;
+}
+
+form div {
+  padding: 0.5rem;
+  display: flex;
+  width: 400px;
+  justify-content: space-between;
+}
+
+form button {
+  padding: 1rem 2rem;
+  text-align: center;
+  border: none;
+  background: orange;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  margin: 1rem auto;
+  transition: 0.3s all;
+}
+
+form button:hover {
+  background: rgb(219, 149, 19);
+}
+</style>
