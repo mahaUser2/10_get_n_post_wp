@@ -1,17 +1,14 @@
 <script setup>
 import {ref} from "vue";
 
-const baseEndpoint = "https://wp.mfw-ucn.dk/wp-json";
-const postsUrl = "/wp/v2/posts";
-const verifyUserEndpoint = "/jwt-auth/v1/token";
-const username = "api-user@gmail.com";
-const password = "WRJi rFet uq4t zKTY t3NJ Ni8G";
-
 // 1. For at kunne POSTE data til vores rest api skal vi logges ind - authenticates. Vi anvender typisk jwt (json web tokens til det. Ka' I huske det fra headless cms 2. sem?). Læs om det her: https://en-gb.wordpress.org/plugins/jwt-auth/ særligt under "configuration", "NAMESPACE AND ENDPOINTS" og "REQUESTING/ GENERATING TOKEN". Skriv så en funktion getToken() der gemmer token i sessionstorage
 
 // 2. Next up - nu skal vi kunne LAVE en ny post!
 //  - Overvej i grupper i 5 minutter HVAD der skal til for at løse denne udfordring. I behøver ikke have komplette svar, men hvilke byggesten skal der til
 //  - Skriv så metoden addPost() og send data med POST metoden - overvåg trafikken i network tab og se hvordan det fungerer
+
+// stuff we need here from the secret folder!
+import {baseEndpoint, postsUrl, verifyUserEndpoint, username, password} from "./login_and_urls.js";
 
 // State
 const posts = ref();
