@@ -50,7 +50,7 @@ function fetchPosts() {
   </div>
 </template>
 
-<style scoped>
+<style >
 .container {
   max-width: 1024px;
   margin: 0 auto;
@@ -64,6 +64,7 @@ function fetchPosts() {
 
 .container img {
   max-width: 100%;
+  height: auto;
 }
 
 article {
